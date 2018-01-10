@@ -10,9 +10,7 @@ app.use(express.static('assets'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/login', function(req, res){
-  res.sendFile(__dirname + '/login/login.html');
-});
+
 
 app.post('/autenticar', function(req, res){
   usuario = req.body.usuario;
@@ -20,23 +18,22 @@ app.post('/autenticar', function(req, res){
 });
 
 app.get('/', function(req, res){
-  console.log(usuario);
-  if (usuario != '') {
-    res.sendFile(__dirname + '/index.html');
-  } else {
-    res.redirect('/login');
-  }
-  
+  res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', function(socket){
+  var addedUser = false;
   console.log('a user connected');
   socket.on('chat message', function(msg){
     console.log('message: ' + msg);
     io.emit('chat message', msg);
+  });
+  socket.on('add user', function (username) {
+    console.log(username);
   });
 });
 
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });
+

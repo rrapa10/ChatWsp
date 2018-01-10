@@ -13,18 +13,41 @@
       #messages li:nth-child(odd) { background: #eee; }
       #messages { margin-bottom: 40px }
     </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   </head>
   <body>
     <ul id="messages"></ul>
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
+
+    <div class="modal fade" id="mostrarmodal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5>Ingrese su Nombre</h5>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <input class="form-control" type="text" name="nombre" id="nombre">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="login()">Ingresar</button>
+            
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="js/main.js"></script>
     <script>
-      $(function () {
+      var usuario = '';
         var socket = io();
+      $(function () {
+        
         $('form').submit(function(){
           socket.emit('chat message', $('#m').val());
           $('#m').val('');
@@ -34,7 +57,22 @@
           $('#messages').append($('<li>').text(usuario + ': ' + msg));
           window.scrollTo(0, document.body.scrollHeight);
         });
+
+        $('#mostrarmodal').modal('show');
+        
       });
+
+      function login() {
+          usuario = $('#nombre').val();
+          console.log(usuario);
+          $.post('autenticar', {usuario:usuario}, function(result){
+            console.log(result);
+            if (result != '') {
+              $('#mostrarmodal').modal('hide');
+              socket.emit('add user', usuario);
+            }
+          });
+        }
     </script>
   </body>
 </html>
